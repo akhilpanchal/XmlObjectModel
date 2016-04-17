@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- XML test case -->
-<LectureNote id = "2" course="CSE681" instructor="Jim Fawcett">
-  <title>XML Example #1</title>
-<reference>
-    <title id="4">Harry Potter</title>
-    <author>J.K. Rowling <note Company='Hogwards'></note></author>
-  </reference>
-</LectureNote>

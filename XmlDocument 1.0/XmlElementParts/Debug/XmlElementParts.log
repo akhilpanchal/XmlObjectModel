@@ -1,5 +1,0 @@
-﻿  xmlElementParts.cpp
-  Tokenizer.cpp
-  Generating Code...
-Tokenizer.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/SAFESEH' specification
-  XmlElementParts.vcxproj -> E:\MS\Sem2Spring2015\Object Oriented Design\Projects\Pr 2\Submitted\XmlDocument 1.0\XmlDocument 1.0\Debug\XmlElementParts.exe
