@@ -144,6 +144,8 @@ namespace XmlProcessing
 		using sPtr = std::shared_ptr < AbstractXmlElement >;
 		XmlDocument();													// Default constructor for programmatic creation of xml files
 		XmlDocument(const std::string& src, bool srcIsFile = true);		// Parameterized constructor
+		XmlDocument(const XmlDocument&) = default;						// Copy Constructor set to default
+		XmlDocument& operator=(const XmlDocument&) = default;			// Copy assignment set to default
 		XmlDocument(XmlDocument&& xDoc);								// move constructor for XmlDocument
 		XmlDocument& operator=(XmlDocument&& xDoc);						// move assignment for XmlDocument
 		
