@@ -182,6 +182,11 @@ namespace XmlProcessing
 		sPtr addTaggedElement();										// helper function to tree generation: XmlDocument constructor
 		sPtr addTextElement();											// helper function to tree generation: XmlDocument constructor
 
+		bool isXmlComment(const int&);
+		bool isXmlProcInstruction(const int&);
+		bool isClosingTag(const int&);
+		bool isXmlDeclaration(const int&);
+
 		void dfs(sPtr node, const std::string& tag);					// helper function to elements()
 		void dfs2(sPtr node, const std::string& tag, bool &tagFound);	// helper function to element()
 		sPtr dfs3(sPtr node, const std::string& attrib, const std::string& value, sPtr elemFound);
@@ -189,6 +194,7 @@ namespace XmlProcessing
 		void findDescendants(sPtr node, const std::string& tag);
 		std::vector < std::string > xmlTokens;							// vector of tokens from xml string
 		size_t i;														// iterator over xml tokens vector
+		std::stack<sPtr> xmlElements;									// Xml Scope Stack
 	};
 }
 #endif

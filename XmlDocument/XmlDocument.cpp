@@ -27,13 +27,13 @@ XmlProcessing::XmlDocument::XmlDocument()
 
 XmlProcessing::XmlDocument::XmlDocument(const std::string& src, bool srcIsFile)
 {
-	src[0] == '<' ? srcIsFile = false:srcIsFile=true;
-	std::string currTag;std::stack<sPtr> xmlElements;
+	srcIsFile = src[0] == '<' ? false:true;
 	pDocElement_ = XmlElementFactory::makeDocElement();
-	sPtr child, parent = pDocElement_; bool closeTag;
+	sPtr child, parent = pDocElement_;
 	try
 	{
-		Toker toker(src,srcIsFile);toker.setMode(Toker::xml);
+		Toker toker(src,srcIsFile);
+		toker.setMode(Toker::xml);
 		XmlParts parts(&toker);			
 		while (parts.get())
 		{
@@ -41,37 +41,59 @@ XmlProcessing::XmlDocument::XmlDocument(const std::string& src, bool srcIsFile)
 			xmlTokens = parts.getTokens();
 			for (i = 0; i < xmlTokens.size(); i++)
 			{
-				closeTag = false;
-				if (xmlTokens[i] == "<" && xmlTokens[i + 1] == "?" && xmlTokens[i + 2] == "xml" && xmlTokens[i + 3]!="-")	//Check if XML Declaration
+				if (isXmlDeclaration(i))	
 					child = addXmlDeclaration();					
-				else if (xmlTokens[i] == "<" && xmlTokens[i + 1] == "!")	//Check if comment
+				else if (isXmlComment(i))
 					child = addCommentElement();
-				else if (xmlTokens[i] == "<" && xmlTokens[i + 1] == "?")	//Check if Proc Instruction				
+				else if (isXmlProcInstruction(i))				
 					child = addProcInstrElement();
-				else if (xmlTokens[i] == "<" && xmlTokens[i + 1] == "/")	//Check if Closing Tag
+				else if (isClosingTag(i))				// Note: Closing Tag condition checked before Tagged Element.
 				{
-					closeTag = true; i += 4;
-					xmlElements.pop();
+					i += 4;
+					if (!xmlElements.empty())
+						xmlElements.pop();		
+					else
+						throw std::exception("Invalid Xml Stream!");
 					if (!xmlElements.empty())
 						parent = xmlElements.top();
+					continue;
 				}					
 				else if (xmlTokens[i] == "<")								//Check if Tagged Element
 				{
-					closeTag = true; sPtr tagElem = addTaggedElement();
+					sPtr tagElem = addTaggedElement();
 					parent->addChild(tagElem);
 					xmlElements.push(tagElem);
-					parent = tagElem;						
+					parent = tagElem;	
+					continue;
 				}
 				else														//If nothing, then Text Element				
 					child = addTextElement();
-				if (!closeTag)
-					parent->addChild(child);
+				parent->addChild(child);
 			}
 		}
-	}catch (std::exception ex)
-	{
+	}
+	catch (std::exception ex) {
 		throw std::exception(ex.what());
 	}
+}
+
+bool XmlDocument::isXmlComment(const int& i) {
+	return xmlTokens[i] == "<" && xmlTokens[i + 1] == "!";
+}
+
+bool XmlDocument::isXmlProcInstruction(const int& i) {
+	return xmlTokens[i] == "<" && xmlTokens[i + 1] == "?";
+}
+
+bool XmlDocument::isClosingTag(const int& i) {
+	return xmlTokens[i] == "<" && xmlTokens[i + 1] == "/";
+}
+
+bool XmlDocument::isXmlDeclaration(const int& i) {
+	return xmlTokens[i] == "<"
+		&& xmlTokens[i + 1] == "?"
+		&& xmlTokens[i + 2] == "xml"
+		&& xmlTokens[i + 3] != "-";
 }
 //----< Helper function to the XmlDocument constructor. Adds XmlElement to the XML tree >-----
 XmlDocument::sPtr XmlProcessing::XmlDocument::addXmlDeclaration()
